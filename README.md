@@ -1,76 +1,93 @@
-Used Car Price Prediction
+# Used Car Price Prediction
 
-What Drives the Price of a Car?
+End-to-end regression analysis predicting used car market prices from 426,880 vehicle listings. Applies the CRISP-DM framework — from data cleaning through feature engineering to model evaluation — to identify the key drivers of resale value.
 
-Analyzing the key factors that influence used car prices using machine learning models.
+## Business Problem
 
-1. Project Overview
+Used car dealers and consumers lack reliable price benchmarks, leading to mispriced inventory and poor purchasing decisions. A data-driven pricing model enables:
+- **Dealers:** Optimal pricing of incoming inventory to maximize margin
+- **Consumers:** Fair-value assessment before negotiating
+- **Marketplaces:** Automated price suggestions and anomaly detection for fraudulent listings
 
-This project aims to analyze the factors affecting used car prices using a dataset from Kaggle. The dataset contains various attributes such as year, odometer, manufacturer, fuel type, transmission, and price.
+## Dataset
 
-By using data preprocessing, exploratory data analysis, and machine learning models, we build a model that predicts the price of a used car based on its attributes.
+| Attribute | Value |
+|---|---|
+| Source | Kaggle — Craigslist used vehicle listings (USA) |
+| Records | 426,880 listings |
+| Features | 18 (year, manufacturer, model, condition, odometer, etc.) |
+| Target | Price (USD) |
+| Price range | $1 — $3,736,929 |
 
-The objective is to help used car dealerships optimize their pricing strategy by understanding which factors impact car prices the most.
+## Results
 
-2. Dataset Information
-	•	Source: Kaggle
-	•	Number of Entries: 426,880
-	•	Key Features:
-	•	year: Manufacturing year of the vehicle
-	•	odometer: Total mileage of the vehicle
-	•	price: Selling price of the vehicle (Target Variable)
-	•	manufacturer: Brand of the car
-	•	fuel: Fuel type (Gas, Diesel, Electric, etc.)
-	•	transmission: Type of transmission (Manual, Automatic)
-	•	condition: Vehicle condition (New, Good, Fair, etc.)
+| Model | MAE | RMSE | R² |
+|---|---|---|---|
+| Baseline (mean price) | $7,041 | — | 0.00 |
+| Linear Regression | **$3,898** | **$3,603** | **0.61** |
+| Ridge Regression (α=1.0) | $3,902 | $3,607 | 0.61 |
+| Lasso Regression (α=1.0) | $3,920 | $3,618 | 0.60 |
 
-3. Installation & Requirements
+Linear Regression achieved a **44.6% reduction in MAE** vs. the naive baseline.
 
-To run this project, you need the following Python libraries:
+## Key Price Drivers
 
-pip install pandas numpy matplotlib seaborn scikit-learn
+Based on regression coefficients and feature analysis:
 
-Steps to execute the notebook:
-	1.	Upload vehicles.csv to the main directory.
-	2.	Open prompt_ll.ipynb in Google Colab or Jupyter Notebook.
-	3.	Run all cells to explore the data, build models, and evaluate predictions.
+| Feature | Impact on Price | Direction |
+|---|---|---|
+| Year (vehicle age) | Very High | ↑ Newer = more expensive |
+| Odometer | High | ↓ More miles = lower price |
+| Condition | High | ↑ Excellent condition premium |
+| Manufacturer | Moderate | Varies by brand |
+| Drive type (4WD vs. FWD) | Moderate | ↑ 4WD commands premium |
+| Fuel type | Low–Moderate | Varies |
 
-4. Project Structure
-📂 Used-Car-Price-Prediction
-│── 📄 README.md
-│── 📄 vehicles.csv  # Dataset used in the project
-│── 📄 prompt_ll.ipynb  # Jupyter Notebook containing all code
+**Main finding:** Vehicle year and odometer reading explain the majority of price variance, consistent with depreciation curves.
 
-5. Methodology
+## CRISP-DM Methodology
 
-This project follows the CRISP-DM framework, a standard data science process:
+```
+Business Understanding → Data Understanding → Data Preparation
+     → Modeling → Evaluation → (Deployment recommendations)
+```
 
-✅ Business Understanding: Identifying key factors influencing used car prices.
-✅ Data Understanding: Exploring and visualizing the dataset.
-✅ Data Preparation: Handling missing values, outliers, and feature engineering.
-✅ Modeling: Training a Linear Regression model for price prediction.
-✅ Evaluation: Assessing model performance using MAE and MSE.
-✅ Deployment: Summarizing findings and providing business recommendations.
+1. **Data Understanding** — 426K listings, significant missing values in condition/cylinders/size
+2. **Data Preparation** — Dropped columns with >40% missing, removed price outliers (<$500, >$100K), encoded categoricals
+3. **Feature Engineering** — Extracted vehicle age from year, log-transformed price distribution
+4. **Modeling** — Linear, Ridge, Lasso regression with cross-validation
+5. **Evaluation** — MAE, RMSE, R² on held-out test set; residual analysis
 
-6. Results & Key Findings
-	•	The most important factors affecting price are the vehicle’s year and odometer reading.
-	•	Newer cars tend to be more expensive.
-	•	Higher mileage leads to lower car prices.
-	•	The model’s average error (MAE) is $3,898.29, and MSE is 12,984,103.
-	•	Further improvements can be made by adding more features and testing advanced models.
+## Project Structure
 
-7. Future Work
-	•	Exploring advanced models (e.g., Random Forest, XGBoost, Neural Networks).
-	•	Using feature selection techniques to identify the most relevant variables.
-	•	Applying data transformations (log transformation) to handle price distribution skewness.
-	•	Developing a real-time price prediction API for car dealerships.
+```
+used-car-price-analysis/
+├── prompt_II.ipynb      # Full CRISP-DM analysis notebook
+├── data/
+│   └── vehicles.csv     # Craigslist listings dataset
+└── LICENSE              # MIT
+```
 
-8. Contributors
+## Quick Start
 
-👤 Bedirhan Ulas
-📧 Email: bedirhanulas@outlook.com
-🔗 LinkedIn: linkedin.com/in/bedirhanulas
+```bash
+git clone https://github.com/BedirhanUlas/used-car-price-analysis.git
+cd used-car-price-analysis
+pip install pandas numpy scikit-learn matplotlib seaborn jupyter
+jupyter notebook prompt_II.ipynb
+```
 
-9. License
+## Tech Stack
 
-This project is developed under Berkeley Extension and follows its academic guidelines.
+`Python` · `scikit-learn` · `pandas` · `NumPy` · `Matplotlib` · `Seaborn`
+
+## Future Improvements
+
+- Apply ensemble methods (Random Forest, XGBoost, LightGBM) — expected R² > 0.85
+- Add log-price transformation to handle right-skewed distribution
+- NLP on vehicle description text for additional signal
+- Deploy as a pricing API with real-time inference
+
+## License
+
+MIT
